@@ -17,6 +17,7 @@ namespace Utils {
 	byte CONSOLE_LIME = 10;
 	byte CONSOLE_YELLOW = 14;
 	byte CONSOLE_RED = 12;
+	byte CONSOLE_PINK = 13;
 	byte CONSOLE_WHITE = 15;
 	byte CONSOLE_DEFAULT = 7;
 
@@ -40,33 +41,42 @@ namespace Utils {
 		return ret;
 	}
 
-	void Log(wstring msg, CONSOLE_TYPE type) {
-		wchar_t buf[500];
+	int getOccurrences(string base_string, string find) {
+		int occurrences = 0;
+		string::size_type start = 0;
+
+		while ((start = base_string.find(find, start)) != string::npos) {
+			++occurrences;
+			start += find.length();
+		}
+		return occurrences;
+	}
+	void Log(char * msg, CONSOLE_TYPE type) {
+		char * msg_type = "";
 		switch (type) {
 			case info:
 				SetConsoleTextAttribute(hConsole, CONSOLE_CYAN);
-				msg = L"[INFO] " + msg;
+				msg_type = "[INFO] ";
 				break;
 			case success: 
 				SetConsoleTextAttribute(hConsole, CONSOLE_LIME);
-				msg = L"[ OK ] " + msg;
+				msg_type = "[ OK ] ";
 				break;
 			case warn:
 				SetConsoleTextAttribute(hConsole, CONSOLE_YELLOW);
-				msg = L"[WARN] " + msg;
+				msg_type = "[WARN] ";
 				break;
 			case error:
 				SetConsoleTextAttribute(hConsole, CONSOLE_RED);
-				msg = L"[ !! ] " + msg;
+				msg_type = "[ !! ] ";
 				break;
 			case bold:
 				SetConsoleTextAttribute(hConsole, CONSOLE_WHITE);
-				msg = L"[ ## ] " + msg;
+				msg_type = "[ ## ] ";
 				break;
 		default:
 			SetConsoleTextAttribute(hConsole, CONSOLE_DEFAULT);
 		}
-		wsprintf(buf, msg.c_str(), "%s");
-		wprintf(L"%s\n", buf);
+		printf_s("%s%s\n", msg_type, msg);
 	}
 }
