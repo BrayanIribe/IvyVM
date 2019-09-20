@@ -10,7 +10,7 @@ IvyVM is an application that was born thanks to one class of **computer architec
 
 I'm fan of ASM and reverse engineering, so this tool does use stack and some things that we see in **real ASM**. So, if you want to learn ASM but you don't know how, this application is for you.
 
-You can see started in the [wiki](https://github.com/BrayanIribe/IvyVM/wiki/Welcome).
+You can get started in the [wiki](https://github.com/BrayanIribe/IvyVM/wiki/Welcome).
 
 The **commands.txt** contains the opcodes to make scripts! 
 You can use C++ syntax on VS Code for highlighting.
