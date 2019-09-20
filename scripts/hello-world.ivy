@@ -1,0 +1,12 @@
+.app
+
+01 0002 //Load string in AC
+03      //Push to stack
+01 0001 // Load string in AC
+03      //Push to stack
+53      //Call MessageBox
+
+.data
+
+0001 "Title"
+0002 "Hello world!"

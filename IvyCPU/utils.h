@@ -51,6 +51,16 @@ namespace Utils {
 		}
 		return occurrences;
 	}
+
+	string replace(string haystack, string find, string replace) {
+		int count = Utils::getOccurrences(haystack, find);
+		for (int i = 0; i < count; i++) {
+			size_t ind = haystack.find(find);
+			haystack.replace(ind, replace.length(), replace);
+		}
+		return haystack;
+	}
+
 	void Log(char * msg, CONSOLE_TYPE type) {
 		char * msg_type = "";
 		switch (type) {

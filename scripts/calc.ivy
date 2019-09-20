@@ -1,0 +1,49 @@
+.app
+
+//Get the first number
+
+01        0001 //Load first string
+50             //CALL_PRINT
+52             //CALL_GETCH
+02        0005 //Save first number in 0005
+
+//Get the second number
+
+01        0002 //Load second string
+50             //CALL_PRINT
+52             //CALL_GETCH
+02        0006 //Save second number in 0006
+
+//Do sum
+
+10        0005 //Sum second number with first (at this moment, AC holds second)
+02        0007 //Save final number
+
+// set the stack to print, IN REVERSE ORDER
+
+01 0007
+03
+01 0006
+03
+01 0005
+03
+
+// now do print
+
+01        0003 //Get the format of result text
+03             //Push title to stack
+51             //Call sprintf to format the text
+03             //Push final format to stack
+50             //Call print
+
+.data
+
+0010      2.3 //eeee
+0001      "Escriba un numero: "
+0002      "Escriba otro numero: "
+0003      "El resultado de %pop% + %pop% es %pop%"
+0004      "Resultado"
+//COMMENT
+0005      0 //first number
+0006      0 //second number
+0007      0 //final number

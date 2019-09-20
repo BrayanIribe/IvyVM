@@ -45,10 +45,12 @@ public:
 
 		for (size_t i = 0; i < app.size(); i++) {
 			Instruction ins(app[i]);
-			if (!ins.valid) {
+			if (!ins.valid && !ins.comment) {
 				Utils::Log("Invalid instruction provided in .app.", error);
 				return;
 			}
+			if (ins.comment)
+				continue;
 			this->app.push_back(ins);
 		}
 
@@ -58,7 +60,7 @@ public:
 
 		for (size_t i = 0; i < data.size(); i++) {
 			Instruction ins(data[i], true);
-			if (!ins.valid) {
+			if (!ins.valid && !ins.comment) {
 				Utils::Log("Invalid instruction provided in .data.", error);
 				return;
 			}
@@ -69,6 +71,8 @@ public:
 				Utils::Log(buf, error);
 				return;
 			}
+			if (ins.comment)
+				continue;
 			this->data.push_back(ins);
 			address.push_back(ins.ins);
 		}
