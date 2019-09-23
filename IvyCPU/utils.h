@@ -61,6 +61,20 @@ namespace Utils {
 		return haystack;
 	}
 
+	string replaceStart(string haystack, string find = " ") {
+		while (haystack.substr(0, 1) == find) {
+			haystack = haystack.substr(1);
+		}
+		return haystack;
+	}
+
+	string replaceEnd(string haystack, string find = " ") {
+		while (haystack.substr(haystack.length() - 1, 1) == find) {
+			haystack = haystack.substr(0, haystack.length() - 1);
+		}
+		return haystack;
+	}
+
 	void Log(char * msg, CONSOLE_TYPE type) {
 		char * msg_type = "";
 		switch (type) {
@@ -88,5 +102,12 @@ namespace Utils {
 			SetConsoleTextAttribute(hConsole, CONSOLE_DEFAULT);
 		}
 		printf_s("%s%s\n", msg_type, msg);
+		SetConsoleTextAttribute(hConsole, CONSOLE_DEFAULT);
+	}
+
+	void padString(std::string &str, const size_t num, const char paddingChar = ' ')
+	{
+		if (num > str.size())
+			str.insert(0, num - str.size(), paddingChar);
 	}
 }

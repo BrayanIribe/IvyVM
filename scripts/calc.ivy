@@ -1,49 +1,48 @@
-.app
+// https://github.com/BrayanIribe/IvyVM
+// Simple IvyVM program that do sum of two numbers.
 
 //Get the first number
 
-01        0001 //Load first string
-50             //CALL_PRINT
-52             //CALL_GETCH
-02        0005 //Save first number in 0005
+0001 01        0100 //Load first string
+0002 50             //CALL_PRINT
+0003 52             //CALL_GETCH
+0004 02        0104 //Save first number in 0104
 
 //Get the second number
 
-01        0002 //Load second string
-50             //CALL_PRINT
-52             //CALL_GETCH
-02        0006 //Save second number in 0006
+0005 01        0101 //Load second string
+0006 50             //CALL_PRINT
+0007 52             //CALL_GETCH
+0008 02        0105 //Save second number in 0006
 
 //Do sum
 
-10        0005 //Sum second number with first (at this moment, AC holds second)
-02        0007 //Save final number
+0009 10        0104 //Sum second number with first (at this moment, AC holds second)
+0010 02        0106 //Save final number
 
 // set the stack to print, IN REVERSE ORDER
 
-01 0007
-03
-01 0006
-03
-01 0005
-03
+0011 01        0106 // Load to AC the result number
+0012 03             // Push to stack the result number
+0013 01        0105 // Load to AC second number
+0014 03             // Push to stack the second number
+0015 01        0104 // Load to AC the first number
+0016 03             // Push to stack the first number
 
 // now do print
 
-01        0003 //Get the format of result text
-03             //Push title to stack
-51             //Call sprintf to format the text
-03             //Push final format to stack
-50             //Call print
+0017 01        0102 //Get the format of result text
+0018 03             //Push title to stack
+0019 51             //Call sprintf to format the text
+0020 03             //Push final format to stack
+0021 50             //Call print
 
-.data
+//data
 
-0010      2.3 //eeee
-0001      "Escriba un numero: "
-0002      "Escriba otro numero: "
-0003      "El resultado de %pop% + %pop% es %pop%"
-0004      "Resultado"
-//COMMENT
-0005      0 //first number
-0006      0 //second number
-0007      0 //final number
+0100      "Write a number: \n"
+0101      "Write another number: "
+0102      "The result of %pop% + %pop% is %pop%"
+0103      "Result"
+0104      0 //first number
+0105      0 //second number
+0106      0 //final number

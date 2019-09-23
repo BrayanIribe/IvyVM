@@ -1,12 +1,13 @@
-.app
+// https://github.com/BrayanIribe/IvyVM
+// Simple IvyVM program that shows a MessageBox with "Hello World".
+// Like ASM, when you call functions, the stack should have
+// the arguments with right-to-left sense.
 
-01 0002 //Load string in AC
-03      //Push to stack
-01 0001 // Load string in AC
-03      //Push to stack
-53      //Call MessageBox
+0001 01 0101 //Load string in AC
+0002 03      //Push to stack the AC value
+0003 01 0100 //Load string in AC
+0004 03      //Push to stack the AC value
+0005 53      //Call MessageBox
 
-.data
-
-0001 "Title"
-0002 "Hello world!"
+0100 "Title"
+0101 "Hello world!"

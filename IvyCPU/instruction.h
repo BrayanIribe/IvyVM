@@ -10,12 +10,16 @@ enum VARIABLE_TYPE {
 };
 
 enum INSTRUCTION_TYPE {
+	INS_UNK,
 	LOAD_AC,
 	SAVE_AC,
 	PUSH_AC,
 	POP_AC,
+	CLEAN_AC,
+	CLEAN_STACK,
+	PRINT_STACK,
 
-	SUM_AC,
+	ADD_AC,
 	SUB_AC,
 	MUL_AC,
 	DIV_AC,
@@ -31,72 +35,65 @@ public:
 
 	bool valid = false;
 	bool comment = false;
-	INSTRUCTION_TYPE type;
+	bool requireData = true;
+	INSTRUCTION_TYPE type = INS_UNK;
 	VARIABLE_TYPE variableType;
-	string raw, ins, data;
+	int line;
+	string address, opcode, data, raw;
 	bool isData = false;
 
-	Instruction(string instruction, bool isData = false) {
+	Instruction(string raw) {
 
-		this->raw = instruction;
+		//parse the raw instruction
+		//remove the spaces from start
 
-		string rawOpcode, rawArguments;
+		raw = Utils::replaceStart(raw);
 
-		if (!this->raw.length() || (this->raw.length() && this->raw.find("//") < 4)) {
+		if (raw.substr(0, 2) == "//") {
 			this->comment = true;
 			return;
 		}
 
-		if (isData)
-			rawOpcode = instruction.substr(0, 4);
-		else
-			rawOpcode = instruction.substr(0, 2);
+		size_t ind;
+		string instruction = raw;
 
-		if (!rawOpcode.length()) {
+		//remove inline comments
+
+		ind = instruction.find("//");
+		if (ind != -1) {
+			instruction = instruction.substr(0, ind);
+		}
+
+		instruction = Utils::replaceEnd(instruction);
+
+		//find spaces before address
+		this->address = instruction.substr(0, 4);
+		instruction = Utils::replaceStart(instruction.substr(4));
+		
+		//search for double quotes
+
+		ind = instruction.find("\"");
+		if (ind != -1) {
+			this->data = instruction.substr(ind);
+			this->TryAsData();
 			return;
 		}
 
-		if (isData)
-			rawArguments = instruction.substr(5);
-		else if (instruction.length() > 2)
-			rawArguments = instruction.substr(3);
-
-		size_t quoteInd = rawArguments.find("\"");
-		if (quoteInd != -1) {
-			rawArguments = rawArguments.substr(quoteInd + 1);
-			size_t lastQuoteInd = rawArguments.find("\"");
-			if (lastQuoteInd == -1)
-				return;
-			rawArguments = rawArguments.substr(0, rawArguments.length() - 1);
-		}
-		else {
-			//is number or boolean
-			size_t commentInd = rawArguments.find(" //");
-			rawArguments = rawArguments.substr(0, commentInd);
-			//now remove spaces
-			size_t lastSpace = rawArguments.find_last_of(' ');
-			rawArguments = rawArguments.substr(lastSpace + 1);
-		}
-
-		this->ins = rawOpcode;
-		this->data = rawArguments;
-
-		if (isData) {
-
-			//opcode = address
-			//arguments = data
-			this->constructData();
-			return;
-
-		}
-
-		byte opcode = atoi(rawOpcode.c_str());
-		int data = atoi(rawArguments.c_str());
-
-		if (opcode == 0) {
-			Utils::Log("Invalid opcode provided.", error);
+		if (instruction.find(".") != -1) {
+			//float, process it as data.
+			this->data = instruction;
+			this->TryAsData();
 			return;
 		}
+
+		this->opcode = instruction.substr(0, 2);
+		if (instruction.find(" ") != -1) {
+			//replace spaces, at this moment
+			//instruction = args
+			instruction = Utils::replaceStart(instruction.substr(3));
+		}
+
+		byte opcode = atoi(this->opcode.c_str());
 
 		switch (opcode) {
 		case 1:
@@ -107,12 +104,26 @@ public:
 			break;
 		case 3:
 			this->type = PUSH_AC;
+			requireData = false;
 			break;
 		case 4:
 			this->type = POP_AC;
+			requireData = false;
+			break;
+		case 5:
+			this->type = CLEAN_AC;
+			requireData = false;
+			break;
+		case 6:
+			this->type = CLEAN_STACK;
+			requireData = false;
+			break;
+		case 7:
+			this->type = PRINT_STACK;
+			requireData = false;
 			break;
 		case 10:
-			this->type = SUM_AC;
+			this->type = ADD_AC;
 			break;
 		case 11:
 			this->type = SUB_AC;
@@ -125,25 +136,39 @@ public:
 			break;
 		case 50:
 			this->type = CALL_PRINT;
+			requireData = false;
 			break;
 		case 51:
 			this->type = CALL_SPRINTF;
+			requireData = false;
 			break;
 		case 52:
 			this->type = CALL_GETCH;
+			requireData = false;
 			break;
 		case 53:
 			this->type = CALL_MESSAGEBOX;
+			requireData = false;
 			break;
 		default:
-			this->valid = false;
+			this->data = instruction;
+			this->TryAsData();
 			return;
 		}
 
-		// printf("%i -> %i\n\n", opcode, this->type);
+		if (requireData && !instruction.empty() && instruction.length() > 0) {
+			//the instruction needs args, process it.
+			//at this moment instruction contains the arguments
+			this->data = instruction;
+		}
 
-		this->ins = rawOpcode;
-		this->data = rawArguments;
+		if (this->type == INS_UNK) {
+			//process the instruction as data
+			this->TryAsData();
+			return;
+		}
+
+		// printf("0x%s %s -> %s\n\n", this->address.c_str(), this->opcode.c_str(), this->data.c_str());
 		this->valid = true;
 	}
 
@@ -155,7 +180,10 @@ public:
 		case SAVE_AC: name = "MOV       " + addr + ", AC"; break;
 		case PUSH_AC: name = "PUSH      AC"; break;
 		case POP_AC:  name = "POP       AC"; break;
-		case SUM_AC:  name = "SUM       AC, " + addr; break;
+		case CLEAN_AC: name = "XOR      AC, AC"; break;
+		case CLEAN_STACK: name = "CALL      ClearStack"; break;
+		case PRINT_STACK: name = "CALL      PrintStack"; break;
+		case ADD_AC:  name = "ADD       AC, " + addr; break;
 		case SUB_AC:  name = "SUB       AC, " + addr; break;
 		case MUL_AC:  name = "MUL       AC, " + addr; break;
 		case DIV_AC:  name = "DIV       AC, " + addr; break;
@@ -168,14 +196,14 @@ public:
 	}
 private:
 
-	void constructData() {
-		this->isData = true;
+	void TryAsData() {
 
 		//determine variable type
 
 		if (data.substr(0, 1) == "\"" && data.substr(data.length() - 1) == "\"") {
 			this->variableType = V_STRING;
 			data = data.substr(1, data.length() - 2);
+			data = Utils::replace(data, "\\n", "\n\r");
 		}
 		else if (data.find('.') != -1) {
 			// is float
@@ -189,6 +217,15 @@ private:
 			//is numeric
 			this->variableType = V_NUMBER;
 		}
+
+		if (this->variableType != V_STRING && data.find(" ") != -1) {
+			//the variable is not string and spaces were found
+			Utils::Log("Data cannot have multiple arguments.", error);
+			return;
+		}
+
+		this->isData = true;
 		this->valid = true;
+		// printf("%s-\n\n", this->data.c_str());
 	}
 };
