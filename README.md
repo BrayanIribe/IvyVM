@@ -24,4 +24,4 @@ You can find example scripts in **scripts** folder, and run them with the VM.
 
 I'm fan of ASM and reverse engineering, so this tool does use stack and some things that we see in **real ASM**. So, if you want to learn ASM but you don't know how, this application is for you.
 
-You can get started in the [wiki](https://github.com/BrayanIribe/IvyVM/wiki/Home).
+You can get started in the [wiki](https://github.com/BrayanIribe/IvyVM/wiki/1---Home).
