@@ -1,5 +1,5 @@
+#pragma once
 #include <iostream>
-using namespace std;
 #include <fstream>
 #include <Windows.h>
 #include <vector>
@@ -7,5 +7,5 @@ using namespace std;
 #include <stdio.h>
 #include <stdarg.h>
 #include <string>
-#include "utils.h"
-#include "vm.h"
+
+using namespace std;

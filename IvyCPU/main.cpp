@@ -5,8 +5,8 @@ This software is open-source.
 https://www.github.com/BrayanIribe/IvyVM
 ===============================================*/
 #include "main.h"
-
-using namespace std;
+#include "vm.h"
+#include "utils.h"
 
 int main(int argc, char ** argv) {
 
