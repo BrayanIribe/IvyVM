@@ -142,13 +142,19 @@
   <ItemGroup>
     <ClCompile Include="instruction.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="memory.cpp" />
+    <ClCompile Include="block.cpp" />
     <ClCompile Include="script.cpp" />
+    <ClCompile Include="task.cpp" />
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="vm.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="instruction.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="memory.h" />
+    <ClInclude Include="block.h" />
+    <ClInclude Include="task.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="vm.h" />
     <ClInclude Include="script.h" />
