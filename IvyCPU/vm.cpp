@@ -1,11 +1,45 @@
 #include "vm.h"
 #include "utils.h"
 
-VM::VM(wstring script_path, bool verbose) {
+VM::VM(wstring script_path, bool verbose, bool memoryMode) {
+	VM::verbose = verbose;
+	VM::memoryMode = memoryMode;
+	if (memoryMode) {
+
+		// create tasks
+
+		int taskTime[] = { 5,4,8,2,2,6,8,10,7,6,5,8,9,10,10,7,3,1,9,3,7,2,8,5,10 };
+		int taskSize[] = { 5760,4190,3290,2030,2550,6990,8940,740,3930,6890,6580,3820,9140,420,220,7540,3210,1380,9350,3610,7540,2710,8390,5950,60 };
+
+		if (size(taskTime) != size(taskSize)) {
+			Utils::Log("Task size and time doesnt contain the same number of elements.", error);
+			return;
+		}
+
+		for (int i = 0; i < size(taskTime); i++) {
+			//int id, int time, int size
+			Task task(tasks.size() + 1, taskTime[i], taskSize[i]);
+			tasks.push_back(task);
+		}
+
+		// create memory blocks
+
+		int blockSize[] = { 9500, 7000, 4500, 8500, 3000, 9000, 1000, 5500, 1500, 500 };
+		for (int i = 0; i < size(blockSize); i++) {
+			Block block(memory.blocks.size() + 1, blockSize[i]);
+			memory.blocks.push_back(block);
+			char buf[100];
+			sprintf_s(buf, "Memory block of %d bytes created at %d", blockSize[i], block.getId());
+			Utils::Log(buf, warn);
+		}
+
+		Utils::Log("Cabada mode...", warn);
+		valid = true;
+		return;
+	}
 	Utils::Log("Loading script file...", info);
 
 	script = new Script(script_path);
-	verbose = verbose;
 
 	if (!script->valid) {
 		Utils::Log("VM failed to load the script.", error);
@@ -36,6 +70,18 @@ VM::VM(wstring script_path, bool verbose) {
 bool VM::run() {
 	if (!valid)
 		return false;
+
+	if (memoryMode) {
+		while (true) {
+			char buf[4];
+			cin >> buf;
+			if (strcmp(buf, "exit") == 0) {
+				break;
+			}
+		}
+		return true;
+	}
+
 
 	Utils::Log("Executing script...\n", bold);
 	//do cpu cycles

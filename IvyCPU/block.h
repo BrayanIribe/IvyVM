@@ -8,7 +8,11 @@ private:
 	int size;                                   // Measured in bytes
 	Task* task;                                 // Task pointer
 public:
+
+	Block(int id, int size);
+
 	int getId();
 	int getSize();
 	Task* getTask();
+	void setTask(Task* task);
 };

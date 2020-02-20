@@ -6,7 +6,7 @@ using namespace std;
 
 class Memory {
 public:
-	vector<Block> block;
+	vector<Block> blocks;
 
 	Block getBlockById(int id);
 	int getTotalFragmentation();

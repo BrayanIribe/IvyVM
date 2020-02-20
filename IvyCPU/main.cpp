@@ -11,13 +11,19 @@ https://www.github.com/BrayanIribe/IvyVM
 int main(int argc, char ** argv) {
 
 	bool verbose = false;
+	bool cabada = false;
 	wstring script_path = Utils::GetExecutablePath();
 
 	for (int i = 0; i < argc; i++) {
 		string argument = argv[i];
+
 		if (argument == "--verbose") {
 			verbose = true;
 		}
+		else if (argument == "--cabada") {
+			cabada = true;
+		}
+
 		size_t ivyExt = argument.find(".ivy");
 		if (ivyExt != -1) {
 			size_t isDrive = argument.find(":");
@@ -31,7 +37,7 @@ int main(int argc, char ** argv) {
 		}
 	}
 
-	VM * vm = new VM(script_path, verbose);
+	VM * vm = new VM(script_path, verbose, !cabada);
 	vm->run();
 	SetConsoleTextAttribute(Utils::hConsole, Utils::CONSOLE_DEFAULT);
 	return 1;

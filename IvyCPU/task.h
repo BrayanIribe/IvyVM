@@ -17,6 +17,7 @@ private:
 	Script* script;                             //Script pointer for the task
 	TASK_STATUS status;                         //Actual status of the task
 public:
+	Task(int id, int time, int size);
 	int getId();
 	int getTime();
 	int getSize();
