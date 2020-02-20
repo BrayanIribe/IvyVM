@@ -73,11 +73,21 @@ bool VM::run() {
 
 	if (memoryMode) {
 		while (true) {
+				char buffer[2000];
+				sprintf(buffer, "%s", "       TABLA DE TAREAS                                   TABLA DE MEMORIA\n");
+				sprintf(buffer, "%s%s", buffer, "| Id | Tiempo | Tamano |    Estado    |       | Bloque | Tamano | Proceso | Tiempo |\n");
+			for (size_t i = 0; i < tasks.size(); i++) {
+				/* printf("| %s |   %s   |  %s  |"
+					Utils::padString()
+				); */
+			}
+				printf("%s", buffer);
 			char buf[4];
 			cin >> buf;
 			if (strcmp(buf, "exit") == 0) {
 				break;
 			}
+			Sleep(1);
 		}
 		return true;
 	}

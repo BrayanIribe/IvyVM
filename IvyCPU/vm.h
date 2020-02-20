@@ -30,7 +30,6 @@ private:
 	Memory memory;
 	vector<Task> tasks;
 
-
 	string pop(bool showError = true);
 	Instruction * GetInstruction(string addr, bool warn = true);
 	bool execute(Instruction * ins);
