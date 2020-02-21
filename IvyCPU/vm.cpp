@@ -4,6 +4,7 @@
 VM::VM(wstring script_path, bool verbose, bool memoryMode) {
 	VM::verbose = verbose;
 	VM::memoryMode = memoryMode;
+	VM::firstOut = 0;
 	if (memoryMode) {
 
 		// create tasks
@@ -112,11 +113,49 @@ bool VM::run() {
 }
 
 void VM::firstFit() {
+	if (firstOut > memory.getTotalBlocks()) {
+		firstOut = 0;
+	} else if (firstOut > 0) {
+		if (memory.getBlockById(firstOut)->getTask() != nullptr) {
+			memory.getBlockById(firstOut)->getTask()->setStatus(TASK_STATUS::STATUS_FINISHED);
+			memory.getBlockById(firstOut)->setTask(nullptr);
+		}
+	}
+	// ADD NULL CHECK HERE
+
+	// priorize waiting proccesses
+	vector<Task*> waiting = memory.getWaitingProcesses();
+	if (waiting.size() > 0) {
+		for (size_t i = 0; i < waiting.size(); i++) {
+			Task* task = waiting[i];
+			if (memory.isProccessOnBlocks(task->getId()))
+				continue;
+
+			for (size_t w = 0; w < memory.blocks.size(); w++) {
+				if (memory.blocks[w].getTask() != nullptr &&
+					memory.blocks[w].getTask()->getStatus() == TASK_STATUS::STATUS_EXECUTING)
+					continue;
+
+				if (memory.blocks[w].getSize() >= task->getSize()) {
+					task->setStatus(TASK_STATUS::STATUS_EXECUTING);
+					memory.blocks[w].setTask(task);
+					break;
+				}
+			}
+		}
+	}
+
 	// logic first fit aka primer ajuste
 	for (size_t i = 0; i < tasks.size(); i++) {
 		bool insert = false;
 		Task* task = (Task*)&tasks[i];
 		int lastSize = memory.getBlockById(1)->getSize();
+
+		// skip if proccess has end
+		if (task->getStatus() == TASK_STATUS::STATUS_FINISHED ||
+			task->getStatus() == TASK_STATUS::STATUS_EXECUTING)
+			continue;
+
 		for (size_t w = 0; w < memory.blocks.size(); w++) {
 			Task* blockTask = memory.blocks[w].getTask();
 			if (blockTask != nullptr) {
@@ -133,15 +172,23 @@ void VM::firstFit() {
 				task->setStatus(TASK_STATUS::STATUS_WAITING);
 			}
 
+			// now determine the proccess that is getting out
+
+			if (firstOut > 0 && blockTask != nullptr) {
+				// first, get waiting process
+				
+			}
+
 			lastSize = memory.blocks[w].getSize();
 		}
 	}
+	VM::firstOut++;
 }
 
 void VM::printMemory() {
 	char buffer[4000];
 	sprintf_s(buffer, "%s",           " TABLA DE TAREAS                             TABLA DE MEMORIA\n\n");
-	sprintf_s(buffer, "%s%s", buffer, " | Id | Tiempo | Tamano | Estado     |       | Bloque | Tamano | Proceso | Tiempo |\n");
+	sprintf_s(buffer, "%s%s", buffer, " | Id | Tiempo | Tamano | Estado     |       | Bloque | Tamano | Proceso | Tiempo |  FI  |\n");
 	for (size_t i = 0; i < tasks.size(); i++) {
 		string id = to_string(tasks[i].getId());
 		string time = to_string(tasks[i].getTime());
@@ -149,7 +196,7 @@ void VM::printMemory() {
 		string status = tasks[i].getStatusString();
 		Utils::padString(id, 2, '0', false);
 		Utils::padString(time, 2, '0', false);
-		Utils::padString(size, 4, '0', false);
+		Utils::padString(size, 4, ' ', false);
 		Utils::padString(status, 10, ' ');
 		sprintf_s(
 			buffer,
@@ -166,25 +213,32 @@ void VM::printMemory() {
 			string block_size = to_string(block->getSize());
 			string block_task = "       ";
 			string block_time = "  ";
+			string block_fragmentation = "    ";
 			if (block->getTask() != nullptr) {
 				Task* task = block->getTask();
 				block_task = to_string(task->getId());
 				block_time = to_string(task->getTime());
+				block_fragmentation = to_string(block->getSize() - task->getSize());
 				Utils::padString(block_task, 2, '0', false);
 				Utils::padString(block_task, 7, ' ');
 				Utils::padString(block_time, 2, '0', false);
+				Utils::padString(block_fragmentation, 4, ' ', false);
 			}
 			Utils::padString(block_id, 2, '0', false);
 			Utils::padString(block_size, 4, '0', false);
 			sprintf_s(
 				buffer,
-				"%s       |   %s   |  %s  | %s |   %s   |",
+				"%s       |   %s   |  %s  | %s |   %s   | %s |",
 				buffer,
 				block_id.c_str(),
 				block_size.c_str(),
 				block_task.c_str(),
-				block_time.c_str()
+				block_time.c_str(),
+				block_fragmentation.c_str()
 			);
+			if (firstOut == block->getId()) {
+				sprintf_s(buffer, "%s <--", buffer);
+			}
 		}
 
 		if (i == memory.blocks.size() + 1) {

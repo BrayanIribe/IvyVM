@@ -29,6 +29,7 @@ private:
 	// #### CABADA ADDITIONS
 	Memory memory;
 	vector<Task> tasks;
+	int firstOut;
 
 	string pop(bool showError = true);
 	Instruction * GetInstruction(string addr, bool warn = true);
@@ -39,6 +40,8 @@ private:
 	bool WinApi_printf();
 	bool WinApi_sprintf();
 	bool WinApi_MessageBox();
+
+	// #### CABADA ADDITIONS
 	void printMemory();
 	void firstFit();
 };

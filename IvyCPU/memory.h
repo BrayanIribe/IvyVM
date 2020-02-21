@@ -9,6 +9,9 @@ public:
 	vector<Block> blocks;
 
 	Block* getBlockById(int id);
-	int getTotalFragmentation();
-	int getTotalMemory();
+	vector<Task*> getWaitingProcesses();
+	bool isProccessOnBlocks(int id);
+	int  getTotalBlocks();
+	int  getTotalFragmentation();
+	int  getTotalMemory();
 };

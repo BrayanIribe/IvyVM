@@ -8,6 +8,32 @@ Block* Memory::getBlockById(int id) {
 	return nullptr;
 }
 
+int Memory::getTotalBlocks() {
+	return blocks.size();
+}
+
+bool Memory::isProccessOnBlocks(int id) {
+	for (size_t i = 0; i < blocks.size(); i++) {
+		Block block = blocks[i];
+		if (block.getTask() != nullptr && block.getTask()->getId() == id)
+			return true;
+	}
+	return false;
+}
+
+vector<Task*> Memory::getWaitingProcesses() {
+	vector<Task*> waiting;
+	for (size_t i = 0; i < blocks.size(); i++) {
+		Block block = blocks[i];
+		Task* task = block.getTask();
+		if (task == nullptr || task->getStatus() == TASK_STATUS::STATUS_EXECUTING)
+			continue;
+		if (task->getStatus() == TASK_STATUS::STATUS_WAITING)
+			waiting.push_back(task);
+	}
+	return waiting;
+}
+
 int Memory::getTotalFragmentation() {
 	int total = 0;
 	for (size_t i = 0; i < blocks.size(); i++) {
