@@ -75,6 +75,12 @@ bool VM::run() {
 
 	if (memoryMode) {
 		while (true) {
+			if (firstOut > memory.getTotalBlocks()) {
+				firstOut = memory.getIdFirstBlockWithTask();
+			}
+			else if (memory.getBlockById(firstOut) != nullptr && memory.getBlockById(firstOut)->getTask() == nullptr) {
+				firstOut = memory.getIdNextBlock(firstOut);
+			}
 			// print memory status on display
 			VM::printMemory();
 			// first setting allocation
@@ -113,14 +119,10 @@ bool VM::run() {
 }
 
 void VM::firstFit() {
-	if (firstOut > memory.getTotalBlocks()) {
-		firstOut = 0;
-	} else if (firstOut > 0) {
-		if (memory.getBlockById(firstOut)->getTask() != nullptr) {
+		if (firstOut > 0 && memory.getBlockById(firstOut)->getTask() != nullptr) {
 			memory.getBlockById(firstOut)->getTask()->setStatus(TASK_STATUS::STATUS_FINISHED);
 			memory.getBlockById(firstOut)->setTask(nullptr);
 		}
-	}
 	// ADD NULL CHECK HERE
 
 	// priorize waiting proccesses
@@ -128,7 +130,7 @@ void VM::firstFit() {
 	if (waiting.size() > 0) {
 		for (size_t i = 0; i < waiting.size(); i++) {
 			Task* task = waiting[i];
-			if (memory.isProccessOnBlocks(task->getId()))
+			if (memory.isProcessOnBlocks(task->getId()))
 				continue;
 
 			for (size_t w = 0; w < memory.blocks.size(); w++) {

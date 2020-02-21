@@ -9,6 +9,15 @@ byte Utils::CONSOLE_PINK = 13;
 byte Utils::CONSOLE_WHITE = 15;
 byte Utils::CONSOLE_DEFAULT = 7;
 
+char* Utils::CONSOLE_RED_INLINE = "\x1B[37m%s\033[0m";
+
+string Utils::inlineColor(string str, char* color) {
+	string col = color;
+	col = Utils::replace(col, "%s", str);
+	// col.replace("%s", str);
+	return col;
+}
+
 wstring Utils::GetExecutablePath() {
 	HMODULE h = GetModuleHandle(NULL); //self handle
 	wchar_t buf[MAX_PATH];

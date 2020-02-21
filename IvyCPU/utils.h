@@ -24,6 +24,12 @@ namespace Utils {
 	extern byte CONSOLE_WHITE;
 	extern byte CONSOLE_DEFAULT;
 
+	extern char* CONSOLE_RED_INLINE;
+	extern char* COSNOLE_LIME_INLINE;
+	extern char* CONSOLE_YELLOW_INLINE;
+	extern char* CONSOLE_CYAN_INLINE;
+	extern char* CONSOLE_MAGENTA_INLINE;
+
 	wstring GetExecutablePath();
 
 	vector<string> explode(string str, char delimiter);
@@ -39,4 +45,6 @@ namespace Utils {
 	void Log(char * msg, CONSOLE_TYPE type);
 
 	void padString(std::string &str, const size_t num, const char paddingChar = ' ', bool padRight = true);
+
+	string inlineColor(string str, char* color);
 }

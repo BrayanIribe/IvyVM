@@ -10,8 +10,10 @@ public:
 
 	Block* getBlockById(int id);
 	vector<Task*> getWaitingProcesses();
-	bool isProccessOnBlocks(int id);
+	bool isProcessOnBlocks(int id);
 	int  getTotalBlocks();
 	int  getTotalFragmentation();
 	int  getTotalMemory();
+	int  getIdFirstBlockWithTask();
+	int  getIdNextBlock(int id);
 };

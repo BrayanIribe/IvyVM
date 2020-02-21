@@ -12,7 +12,30 @@ int Memory::getTotalBlocks() {
 	return blocks.size();
 }
 
-bool Memory::isProccessOnBlocks(int id) {
+int Memory::getIdFirstBlockWithTask() {
+	for (size_t i = 0; i < blocks.size(); i++) {
+		if (blocks[i].getTask() != nullptr)
+			return i + 1;
+	}
+	return 1;
+}
+
+int Memory::getIdNextBlock(int pos) {
+	int id = pos - 1;
+	for (size_t i = pos - 1; i < blocks.size(); i++) {
+		if (blocks[i].getTask() != nullptr) {
+			if (i > id)
+			id = i + 1;
+		}
+	}
+
+	if (id == pos - 1)
+		id = Memory::getIdFirstBlockWithTask();
+
+	return id;
+}
+
+bool Memory::isProcessOnBlocks(int id) {
 	for (size_t i = 0; i < blocks.size(); i++) {
 		Block block = blocks[i];
 		if (block.getTask() != nullptr && block.getTask()->getId() == id)

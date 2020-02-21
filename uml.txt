@@ -39,10 +39,12 @@ class Memory {
 	+ Memory()
 	+ getBlockById(int id): Block*
 	+ getWaitingProcesses(): vector<Task>
-	+ isProccessOnBlocks(): bool
+	+ isProcessOnBlocks(): bool
 	+ getTotalBlocks(): int
 	+ getTotalFragmentation(): int
 	+ getTotalMemory(): int
+	+ getIdFirstBlockWithTask(): int
+	+ getIdNextBlock(): int
 }
 
 class Block {
