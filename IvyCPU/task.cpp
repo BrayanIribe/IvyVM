@@ -27,6 +27,24 @@ TASK_STATUS Task::getStatus() {
 	return status;
 }
 
-bool Task::setTask(int id, int time, int size, Script* script){
-	return true;
+string Task::getStatusString() {
+	string rtn;
+	switch (status) {
+	case STATUS_UNDIRTY: 
+		rtn = "";
+		break;
+	case STATUS_WAITING:
+		rtn = "Esperando";
+		break;
+	case STATUS_EXECUTING:
+		rtn = "Ejecutando";
+		break;
+	case STATUS_FINISHED:
+		rtn = "Finalizado";
+	}
+	return rtn;
+}
+
+void Task::setStatus(TASK_STATUS status) {
+	Task::status = status;
 }

@@ -39,4 +39,6 @@ private:
 	bool WinApi_printf();
 	bool WinApi_sprintf();
 	bool WinApi_MessageBox();
+	void printMemory();
+	void firstFit();
 };

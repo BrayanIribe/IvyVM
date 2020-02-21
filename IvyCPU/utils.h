@@ -38,5 +38,5 @@ namespace Utils {
 
 	void Log(char * msg, CONSOLE_TYPE type);
 
-	void padString(std::string &str, const size_t num, const char paddingChar = ' ');
+	void padString(std::string &str, const size_t num, const char paddingChar = ' ', bool padRight = true);
 }

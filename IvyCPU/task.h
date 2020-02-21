@@ -5,7 +5,7 @@
 enum TASK_STATUS {
 	STATUS_UNDIRTY,
 	STATUS_WAITING,
-	STATUS_EXECUTED,
+	STATUS_EXECUTING,
 	STATUS_FINISHED
 };
 
@@ -23,5 +23,7 @@ public:
 	int getSize();
 	Script* getScript();
 	TASK_STATUS getStatus();
-	bool setTask(int id, int time, int size, Script* script = nullptr);
+	string getStatusString();
+	void setStatus(TASK_STATUS status);
+	// bool setTask(int id, int time, int size, Script* script = nullptr);
 };

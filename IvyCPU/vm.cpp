@@ -19,6 +19,7 @@ VM::VM(wstring script_path, bool verbose, bool memoryMode) {
 		for (int i = 0; i < size(taskTime); i++) {
 			//int id, int time, int size
 			Task task(tasks.size() + 1, taskTime[i], taskSize[i]);
+			// task.setStatus(TASK_STATUS::STATUS_WAITING);
 			tasks.push_back(task);
 		}
 
@@ -73,20 +74,12 @@ bool VM::run() {
 
 	if (memoryMode) {
 		while (true) {
-				char buffer[2000];
-				sprintf(buffer, "%s", "       TABLA DE TAREAS                                   TABLA DE MEMORIA\n");
-				sprintf(buffer, "%s%s", buffer, "| Id | Tiempo | Tamano |    Estado    |       | Bloque | Tamano | Proceso | Tiempo |\n");
-			for (size_t i = 0; i < tasks.size(); i++) {
-				/* printf("| %s |   %s   |  %s  |"
-					Utils::padString()
-				); */
-			}
-				printf("%s", buffer);
-			char buf[4];
-			cin >> buf;
-			if (strcmp(buf, "exit") == 0) {
-				break;
-			}
+			// print memory status on display
+			VM::printMemory();
+			// first setting allocation
+			VM::firstFit();
+			cin.ignore();
+			system("cls");
 			Sleep(1);
 		}
 		return true;
@@ -116,6 +109,100 @@ bool VM::run() {
 	sprintf_s(buffer, 100, "Script execution ended. PC = %i", PC);
 	Utils::Log(buffer, warn);
 	return true;
+}
+
+void VM::firstFit() {
+	// logic first fit aka primer ajuste
+	for (size_t i = 0; i < tasks.size(); i++) {
+		bool insert = false;
+		Task* task = (Task*)&tasks[i];
+		int lastSize = memory.getBlockById(1)->getSize();
+		for (size_t w = 0; w < memory.blocks.size(); w++) {
+			Task* blockTask = memory.blocks[w].getTask();
+			if (blockTask != nullptr) {
+				continue;
+			}
+
+			if (memory.blocks[w].getSize() >= task->getSize()) {
+				task->setStatus(TASK_STATUS::STATUS_EXECUTING);
+				memory.blocks[w].setTask(task);
+				insert = true;
+				break;
+			}
+			else if (!blockTask) {
+				task->setStatus(TASK_STATUS::STATUS_WAITING);
+			}
+
+			lastSize = memory.blocks[w].getSize();
+		}
+	}
+}
+
+void VM::printMemory() {
+	char buffer[4000];
+	sprintf_s(buffer, "%s",           " TABLA DE TAREAS                             TABLA DE MEMORIA\n\n");
+	sprintf_s(buffer, "%s%s", buffer, " | Id | Tiempo | Tamano | Estado     |       | Bloque | Tamano | Proceso | Tiempo |\n");
+	for (size_t i = 0; i < tasks.size(); i++) {
+		string id = to_string(tasks[i].getId());
+		string time = to_string(tasks[i].getTime());
+		string size = to_string(tasks[i].getSize());
+		string status = tasks[i].getStatusString();
+		Utils::padString(id, 2, '0', false);
+		Utils::padString(time, 2, '0', false);
+		Utils::padString(size, 4, '0', false);
+		Utils::padString(status, 10, ' ');
+		sprintf_s(
+			buffer,
+			"%s | %s |   %s   |  %s  | %s |",
+			buffer,
+			id.c_str(),
+			time.c_str(),
+			size.c_str(),
+			status.c_str()
+		);
+		if (i <= memory.blocks.size() - 1) {
+			Block* block = memory.getBlockById(i + 1);
+			string block_id = to_string(block->getId());
+			string block_size = to_string(block->getSize());
+			string block_task = "       ";
+			string block_time = "  ";
+			if (block->getTask() != nullptr) {
+				Task* task = block->getTask();
+				block_task = to_string(task->getId());
+				block_time = to_string(task->getTime());
+				Utils::padString(block_task, 2, '0', false);
+				Utils::padString(block_task, 7, ' ');
+				Utils::padString(block_time, 2, '0', false);
+			}
+			Utils::padString(block_id, 2, '0', false);
+			Utils::padString(block_size, 4, '0', false);
+			sprintf_s(
+				buffer,
+				"%s       |   %s   |  %s  | %s |   %s   |",
+				buffer,
+				block_id.c_str(),
+				block_size.c_str(),
+				block_task.c_str(),
+				block_time.c_str()
+			);
+		}
+
+		if (i == memory.blocks.size() + 1) {
+			int totalFragmentation = memory.getTotalFragmentation();
+			int totalMemory = memory.getTotalMemory();
+			float percentage = ((float)totalFragmentation / (float)totalMemory) * 100;
+			string fragmentation = to_string(totalFragmentation);
+			sprintf_s(
+				buffer,
+				"%s       Total de fragmentacion interna: %s (%.0f%%)",
+				buffer,
+				fragmentation.c_str(),
+				percentage
+			);
+		}
+		sprintf_s(buffer, "%s\n", buffer);
+	}
+	printf("%s", buffer);
 }
 
 bool VM::execute(Instruction * ins) {

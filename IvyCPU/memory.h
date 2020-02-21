@@ -8,6 +8,7 @@ class Memory {
 public:
 	vector<Block> blocks;
 
-	Block getBlockById(int id);
+	Block* getBlockById(int id);
 	int getTotalFragmentation();
+	int getTotalMemory();
 };

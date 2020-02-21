@@ -93,8 +93,14 @@ void Utils::Log(char * msg, CONSOLE_TYPE type) {
 	SetConsoleTextAttribute(hConsole, CONSOLE_DEFAULT);
 }
 
-void Utils::padString(std::string &str, const size_t num, const char paddingChar)
+void Utils::padString(std::string &str, const size_t num, const char paddingChar, bool padRight)
 {
-	if (num > str.size())
-		str.insert(0, num - str.size(), paddingChar);
+	if (padRight) {
+		if (num > str.size())
+			str.insert(str.length(), num - str.size(), paddingChar);
+	}
+	else {
+		if (num > str.size())
+			str.insert(0, num - str.size(), paddingChar);
+	}
 }
