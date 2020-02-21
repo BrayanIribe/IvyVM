@@ -1,0 +1,67 @@
+@startuml
+
+enum TASK_STATUS << enum >> {
+	STATUS_UNDIRTY,
+	STATUS_WAITING,
+	STATUS_EXECUTING,
+	STATUS_FINISHED
+}
+
+class VM {
+	- memory: Memory
+	- tasks: vector<Task>
+	- firstOut: int
+
+	+ VM()
+	+ run(): bool
+	+ printMemory(): void
+	+ firstFit(): void
+}
+
+class Task {
+	- id: int
+	- time: int
+	- size: int
+	- status: TASK_STATUS
+
+	+ Task(int id, int time, int size)
+	+ getId(): int
+	+ getTime(): int
+	+ getSize(): int
+	+ getStatus(): TASK_STATUS
+	+ getStatusString(): string
+	+ setStatus(TASK_STATUS status): void
+}
+
+class Memory {
+	+ blocks: vector<Block>
+
+	+ Memory()
+	+ getBlockById(int id): Block*
+	+ getWaitingProcesses(): vector<Task>
+	+ isProccessOnBlocks(): bool
+	+ getTotalBlocks(): int
+	+ getTotalFragmentation(): int
+	+ getTotalMemory(): int
+}
+
+class Block {
+	- id: int
+	- size: int
+	- task: Task*
+
+	+ Block(int id, int size)
+	+ getId(): int
+	+ getSize(): int
+	+ setTask(Task* task): void
+}
+
+
+
+VM .. Memory
+VM .. Task
+Memory .. Block
+Memory .. Task
+Task .. TASK_STATUS
+Block .. Task
+@enduml
